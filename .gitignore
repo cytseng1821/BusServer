@@ -1,0 +1,7 @@
+BusServer
+*.DS_Store
+.env
+log/*
+
+# vscode debugger
+launch.json
