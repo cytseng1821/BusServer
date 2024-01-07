@@ -31,5 +31,5 @@ CREATE TABLE follow_citybus_stop (
     "id"        BIGSERIAL NOT NULL PRIMARY KEY,
     "user_id"   INTEGER NOT NULL REFERENCES "user" ("id"),
     "stop_id"   INTEGER NOT NULL REFERENCES "citybus_stop" ("id"),
-    UNIQUE("user_id", "stop_id")
+    UNIQUE("stop_id", "user_id")
 );

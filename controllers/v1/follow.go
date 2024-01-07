@@ -16,6 +16,7 @@ import (
 // @Router /api/v1/citybus/stop [post]
 func FollowCityBusStop(c *gin.Context) {
 	var params struct {
+		UserID  string `form:"user_id" binding:"required"` // parse from header token (handle at middleware) and add to param
 		RouteID string `form:"route_id" binding:"required"`
 		StopID  string `form:"stop_id" binding:"required"`
 	}
@@ -24,6 +25,8 @@ func FollowCityBusStop(c *gin.Context) {
 		return
 	}
 
+	// [TODO] Upsert subscription relationship into database
 	fmt.Println(params)
+
 	constant.ResponseWithData(c, http.StatusOK, constant.SUCCESS, nil)
 }
