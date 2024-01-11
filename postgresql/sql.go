@@ -249,6 +249,87 @@ func InsertCityBusRoutesStops(ctx context.Context, routeID string, stops []CityB
 	return nil
 }
 
+type CityBusRouteName struct {
+	City      string `db:"city"`
+	RouteName string `db:"route_name"`
+}
+
+func GetCityBusRoutesFollowed(ctx context.Context) ([]CityBusRouteName, error) {
+	query := `
+		WITH followed_stops AS (
+			SELECT
+				DISTINCT stop_id
+			FROM
+				citybus_user_stop
+		), followed_routes AS (
+			SELECT
+				route_id
+			FROM
+				citybus_stop
+			WHERE
+				id IN (SELECT stop_id FROM followed_stops)
+		)
+		SELECT
+			city, route_name
+		FROM
+			citybus_route
+		WHERE
+			id IN (SELECT route_id FROM followed_routes)`
+	rows, err := Pool.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var cityBusRoutes []CityBusRouteName
+	if err := pgxscan.ScanAll(&cityBusRoutes, rows); err != nil {
+		return nil, err
+	}
+
+	return cityBusRoutes, nil
+}
+
+type CityBusSubRouteStopSequence struct {
+	StopID       string `db:"stop_id"`
+	StopSequence int    `db:"stop_sequence"`
+}
+
+func GetCityBusSubRouteStops(ctx context.Context, subRouteID string, direction int) ([]CityBusSubRouteStopSequence, error) {
+	query := `
+		WITH filtered_subroute AS (
+			SELECT id
+			FROM citybus_subroute
+			WHERE subroute_id = $1 AND direction = $2
+		), filtered_stops AS (
+			SELECT stop_id, stop_sequence
+			FROM citybus_subroute_stop_relation
+			WHERE subroute_id = (SELECT id FROM filtered_subroute)
+			ORDER BY stop_sequence
+		)
+		SELECT
+			s.stop_id, fs.stop_sequence
+		FROM
+			citybus_stop s
+		INNER JOIN
+			filtered_stops fs
+		ON
+			s.id = fs.stop_id
+		ORDER BY
+			fs.stop_sequence`
+	rows, err := Pool.Query(ctx, query, subRouteID, direction)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var cityBusStops []CityBusSubRouteStopSequence
+	if err := pgxscan.ScanAll(&cityBusStops, rows); err != nil {
+		return nil, err
+	}
+
+	return cityBusStops, nil
+}
+
 func generatePlaceHolder(index *int, size int) string {
 	var placeHolders []string
 	for i := 0; i < size; i++ {

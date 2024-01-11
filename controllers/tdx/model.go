@@ -53,7 +53,7 @@ type TDXCityBusPointData struct {
 	StopUID       string            `json:"StopUID"`
 	StopID        string            `json:"StopID"`
 	StopName      map[string]string `json:"StopName"`
-	StopSequence  string            `json:"StopSequence"`
+	StopSequence  int               `json:"StopSequence"`
 	DutyStatus    int               `json:"DutyStatus"`  // 勤務狀態 : [0:'正常',1:'開始',2:'結束']
 	BusStatus     int               `json:"BusStatus"`   // 行車狀況 : [0:'正常',1:'車禍',2:'故障',3:'塞車',4:'緊急求援',5:'加油',90:'不明',91:'去回不明',98:'偏移路線',99:'非營運狀態',100:'客滿',101:'包車出租',255:'未知']
 	EventType     int               `json:"A2EventType"` // 進站離站 : [0:'離站',1:'進站']

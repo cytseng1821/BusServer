@@ -2,6 +2,7 @@ package main
 
 import (
 	"BusServer/config"
+	v1 "BusServer/controllers/v1"
 	"BusServer/postgresql"
 	"BusServer/routes"
 	"io"
@@ -27,6 +28,7 @@ func init() {
 	log.SetOutput(mw)
 	config.Initialize(".env")
 	postgresql.Initialize()
+	v1.Initialize()
 }
 
 func main() {

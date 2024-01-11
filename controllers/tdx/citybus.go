@@ -2,8 +2,8 @@ package tdx
 
 import (
 	"BusServer/constant"
+	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"path"
@@ -79,20 +79,18 @@ func GetCityBusRoutesStops(c *gin.Context, city, route string) ([]TDXCityBusRout
 	return respData, statusCode, nil
 }
 
-func GetCityBusNearStops(c *gin.Context, city, route string) {
+func GetCityBusNearStops(c context.Context, city, route string) ([]TDXCityBusPointData, int, error) {
 	uri, err := url.Parse(TDXBasicAPI)
 	if err != nil {
-		fmt.Println("parse", err.Error())
-		return
+		return nil, 0, err
 	}
 	uri.Path = path.Join(uri.Path, "/v2/Bus/RealTimeNearStop/City/"+city+"/"+route)
 
 	q := url.Values{}
 	q.Add("$format", "JSON")
 	uri.RawQuery = q.Encode()
-	fmt.Println(uri.String())
 
-	respBody, _, err := constant.Request(c, constant.RequestParam{
+	respBody, statusCode, err := constant.Request(c, constant.RequestParam{
 		Method: http.MethodGet,
 		URL:    uri.String(),
 		Body:   nil,
@@ -101,16 +99,15 @@ func GetCityBusNearStops(c *gin.Context, city, route string) {
 		},
 	})
 	if err != nil {
-		fmt.Println("request", err.Error())
-		return
+		return nil, statusCode, err
 	}
 
 	var respData []TDXCityBusPointData
 	if err = json.Unmarshal(respBody, &respData); err != nil {
-		fmt.Println("unmarshal", err.Error(), string(respBody))
-		return
+		return nil, statusCode, err
 	}
 
-	respBytes, _ := json.MarshalIndent(respData, "", "    ")
-	fmt.Println(string(respBytes))
+	// respBytes, _ := json.MarshalIndent(respData, "", "    ")
+	// fmt.Println(string(respBytes))
+	return respData, statusCode, nil
 }

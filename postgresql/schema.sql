@@ -1,4 +1,4 @@
-CREATE TABLE user (
+CREATE TABLE citybus_user (
     "id"            BIGSERIAL NOT NULL PRIMARY KEY,
     "user_id"       VARCHAR(50) NOT NULL UNIQUE,
     "account"       VARCHAR(254) NOT NULL,
@@ -39,9 +39,9 @@ CREATE TABLE citybus_subroute_stop_relation (
     UNIQUE("subroute_id", "stop_sequence")
 )
 
-CREATE TABLE follow_citybus_stop (
+CREATE TABLE citybus_user_stop (
     "id"        BIGSERIAL NOT NULL PRIMARY KEY,
-    "user_id"   INTEGER NOT NULL REFERENCES "user" ("id"),
+    "user_id"   INTEGER NOT NULL REFERENCES "citybus_user" ("id"),
     "stop_id"   INTEGER NOT NULL REFERENCES "citybus_stop" ("id"),
     UNIQUE("stop_id", "user_id")
 );

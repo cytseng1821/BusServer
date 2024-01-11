@@ -3,12 +3,11 @@ package tdx
 import (
 	"BusServer/config"
 	"BusServer/constant"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -16,7 +15,7 @@ var (
 	TDXAccessToken string
 )
 
-func GetTDXToken(c *gin.Context) (string, error) {
+func GetTDXToken(c context.Context) (string, error) {
 	uri, err := url.Parse(TDXTokenAPI)
 	if err != nil {
 		return "", err
